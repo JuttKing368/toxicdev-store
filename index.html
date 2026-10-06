@@ -1,0 +1,1934 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Toxic Dev — Discover. Download. Explore.</title>
+  
+  <!-- SEO & Social Open Graph Meta -->
+  <meta id="meta-description" name="description" content="Discover powerful Android apps, utilities, and developer tools on Toxic Dev." />
+  <meta id="og-title" property="og:title" content="Toxic Dev — Private Android App Store" />
+  <meta id="og-description" property="og:description" content="Explore high-quality Android APKs, tools and utilities." />
+  <meta id="og-image" property="og:image" content="https://images.unsplash.com/photo-1607252650355-f7fd0460ccdb?w=800&auto=format&fit=crop&q=80" />
+  <meta name="robots" content="index, follow" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              400: '#34d399',
+              500: '#10b981', // Toxic Emerald
+              600: '#059669',
+              700: '#047857',
+              800: '#065f46',
+              900: '#064e3b',
+              accent: '#06b6d4' // Cyan accent
+            },
+            dark: {
+              base: '#080c14',
+              surface: '#0f172a',
+              card: '#1e293b',
+              border: '#334155'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    /* Custom Scrollbar & Utility Styles */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #10b981; }
+    .glass { background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(12px); }
+    .glass-card { background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.08); }
+    .glow-emerald { box-shadow: 0 0 25px -5px rgba(16, 185, 129, 0.3); }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="bg-dark-base text-slate-100 font-sans antialiased min-h-screen flex flex-col selection:bg-brand-500 selection:text-white">
+
+  <!-- Global Announcement Banner -->
+  <div id="announcement-banner" class="hidden bg-gradient-to-r from-brand-700 via-brand-600 to-cyan-700 text-white text-xs md:text-sm py-2 px-4 text-center font-medium relative flex items-center justify-center gap-2">
+    <i data-lucide="mega-phone" class="w-4 h-4 animate-bounce"></i>
+    <span id="announcement-text">Welcome to Toxic Dev! Create an account to download exclusive verified Android APKs.</span>
+    <button onclick="closeAnnouncement()" class="absolute right-3 top-1/2 -translate-y-1/2 text-white/80 hover:text-white">
+      <i data-lucide="x" class="w-4 h-4"></i>
+    </button>
+  </div>
+
+  <!-- Primary Navigation Header -->
+  <header class="sticky top-0 z-40 glass border-b border-slate-800/80 transition-all duration-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2 sm:gap-4">
+      
+      <!-- Brand Logo -->
+      <a href="#home" onclick="navigateTo('home')" class="flex items-center gap-2 group min-w-0 flex-shrink-0">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-400 to-brand-700 p-0.5 shadow-lg shadow-brand-500/20 group-hover:scale-105 transition-transform">
+          <div id="nav-logo-inner" class="w-full h-full bg-dark-base rounded-[10px] flex items-center justify-center overflow-hidden">
+            <i data-lucide="terminal" class="w-5 h-5 text-brand-400 group-hover:rotate-6 transition-transform"></i>
+          </div>
+        </div>
+        <div>
+          <span id="nav-brand-name" class="block whitespace-nowrap font-extrabold text-base sm:text-lg tracking-tight bg-gradient-to-r from-white via-slate-200 to-brand-400 bg-clip-text text-transparent">Toxic Dev</span>
+          <span class="hidden sm:block max-w-[220px] truncate text-[10px] font-mono text-brand-400/80 tracking-widest uppercase -mt-1" id="nav-brand-tagline">Store v2.4</span>
+        </div>
+      </a>
+
+      <!-- Navigation Search Bar (Desktop) -->
+      <div class="hidden md:flex flex-1 max-w-md mx-4 relative">
+        <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+        <input type="text" id="header-search-input" placeholder="Search apps, tools & utilities..." 
+          class="w-full bg-slate-900/80 border border-slate-700/60 rounded-full pl-9 pr-4 py-1.5 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all"
+          onkeyup="handleHeaderSearch(event)">
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="hidden lg:flex items-center gap-6 text-sm font-medium text-slate-300">
+        <button onclick="navigateTo('home')" class="hover:text-brand-400 transition-colors flex items-center gap-1.5"><i data-lucide="home" class="w-4 h-4"></i> Home</button>
+        <button onclick="navigateTo('apps')" class="hover:text-brand-400 transition-colors flex items-center gap-1.5"><i data-lucide="layout-grid" class="w-4 h-4"></i> All Apps</button>
+        <button onclick="navigateTo('categories')" class="hover:text-brand-400 transition-colors flex items-center gap-1.5"><i data-lucide="folder" class="w-4 h-4"></i> Categories</button>
+        <button onclick="navigateTo('seo-tool')" class="hover:text-brand-400 transition-colors flex items-center gap-1.5 text-xs bg-slate-800/80 px-2.5 py-1 rounded-full border border-slate-700/50"><i data-lucide="globe" class="w-3.5 h-3.5 text-brand-400"></i> SEO Engine</button>
+      </nav>
+
+      <!-- User Auth & Admin Controls -->
+      <div class="flex items-center gap-1 sm:gap-3 flex-shrink-0">
+        <button onclick="toggleMobileSearch()" class="md:hidden p-2 text-slate-300 hover:text-white rounded-lg">
+          <i data-lucide="search" class="w-5 h-5"></i>
+        </button>
+
+        <!-- Admin View Switcher (For Demo & Management) -->
+        <div id="admin-badge-container" class="hidden">
+          <button onclick="navigateTo('admin')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-semibold hover:bg-amber-500/20 transition">
+            <i data-lucide="shield-alert" class="w-3.5 h-3.5"></i><span class="hidden sm:inline">Admin Dashboard</span><span class="sm:hidden">Admin</span>
+          </button>
+        </div>
+
+        <div id="nav-user-area" class="flex items-center gap-2">
+          <!-- Populated dynamically by JS -->
+        </div>
+
+        <button onclick="toggleMobileMenu()" class="lg:hidden p-2 text-slate-300 hover:text-white rounded-lg">
+          <i data-lucide="menu" class="w-6 h-6"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Search Drawer -->
+    <div id="mobile-search-bar" class="hidden md:hidden px-4 py-2 border-t border-slate-800 bg-slate-900/95">
+      <div class="relative">
+        <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+        <input type="text" id="mobile-search-input" placeholder="Search apps, package name..." 
+          class="w-full bg-slate-950 border border-slate-700 rounded-lg pl-9 pr-4 py-2 text-sm text-slate-200 focus:outline-none focus:border-brand-500"
+          onkeyup="handleHeaderSearch(event)">
+      </div>
+    </div>
+
+    <!-- Mobile Navigation Drawer -->
+    <div id="mobile-menu" class="hidden lg:hidden border-t border-slate-800 bg-slate-900/95 px-4 py-4 space-y-3">
+      <button onclick="navigateTo('home'); toggleMobileMenu();" class="w-full text-left py-2 text-slate-300 hover:text-brand-400 font-medium flex items-center gap-2"><i data-lucide="home" class="w-4 h-4"></i> Home</button>
+      <button onclick="navigateTo('apps'); toggleMobileMenu();" class="w-full text-left py-2 text-slate-300 hover:text-brand-400 font-medium flex items-center gap-2"><i data-lucide="layout-grid" class="w-4 h-4"></i> All Apps</button>
+      <button onclick="navigateTo('categories'); toggleMobileMenu();" class="w-full text-left py-2 text-slate-300 hover:text-brand-400 font-medium flex items-center gap-2"><i data-lucide="folder" class="w-4 h-4"></i> Categories</button>
+      <button onclick="navigateTo('seo-tool'); toggleMobileMenu();" class="w-full text-left py-2 text-slate-300 hover:text-brand-400 font-medium flex items-center gap-2"><i data-lucide="globe" class="w-4 h-4 text-brand-400"></i> SEO & Sitemap Inspector</button>
+      <div class="pt-2 border-t border-slate-800" id="mobile-auth-area"></div>
+    </div>
+  </header>
+
+  <!-- MAIN ROUTER CONTAINER -->
+  <main id="app-router" class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
+    <!-- Dynamic Views are rendered here via JS Router -->
+  </main>
+
+  <!-- Global Modals -->
+  <!-- Auth Modal (Login / Register) -->
+  <div id="auth-modal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 sm:p-8 relative shadow-2xl glow-emerald">
+      <button onclick="closeAuthModal()" class="absolute right-4 top-4 text-slate-400 hover:text-white p-1">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="hidden mx-auto w-28 h-28 rounded-2xl overflow-hidden mb-4"><img id="auth-logo" alt="Toxic Dev" class="w-full h-full object-cover" style="transform:scale(1.11)"></div>
+
+      <!-- Auth Form Tabs -->
+      <div class="flex border-b border-slate-800 mb-6">
+        <button id="tab-login-btn" onclick="switchAuthTab('login')" class="flex-1 py-2.5 font-semibold text-sm border-b-2 border-brand-500 text-brand-400">Log In</button>
+        <button id="tab-register-btn" onclick="switchAuthTab('register')" class="flex-1 py-2.5 font-semibold text-sm border-b-2 border-transparent text-slate-400 hover:text-slate-200">Register</button>
+      </div>
+
+      <!-- Protected Action Alert Banner -->
+      <div id="auth-redirect-notice" class="hidden mb-4 p-3 bg-brand-500/10 border border-brand-500/30 rounded-lg text-xs text-brand-300 flex items-center gap-2">
+        <i data-lucide="lock" class="w-4 h-4 text-brand-400 flex-shrink-0"></i>
+        <span><strong>Authentication required:</strong> Please log in or create an account to start your APK download.</span>
+      </div>
+
+      <!-- Login Form -->
+      <form id="login-form" onsubmit="handleLoginSubmit(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Email or Username</label>
+          <input type="text" id="login-email" required placeholder="admin@toxicdev.io or username" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3.5 py-2 text-sm text-white focus:border-brand-500 focus:outline-none">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Password</label>
+          <input type="password" id="login-password" required placeholder="••••••••" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3.5 py-2 text-sm text-white focus:border-brand-500 focus:outline-none">
+        </div>
+        <div class="flex items-center justify-between text-xs">
+          <label class="flex items-center gap-2 text-slate-400 cursor-pointer">
+            <input type="checkbox" checked class="rounded bg-slate-950 border-slate-700 text-brand-500 focus:ring-brand-500"> Remember me
+          </label>
+          <button type="button" onclick="showForgotPassword()" class="text-brand-400 hover:underline">Forgot password?</button>
+        </div>
+        <button type="submit" class="w-full py-2.5 bg-brand-500 hover:bg-brand-600 text-slate-950 font-bold rounded-lg text-sm transition-colors shadow-lg shadow-brand-500/20">
+          Sign In
+        </button>
+        <div id="google-login-box" class="hidden space-y-2">
+          <div class="text-center text-[11px] text-slate-500">ya</div>
+          <button type="button" onclick="googleLogin()" class="w-full py-2.5 bg-white hover:bg-slate-200 text-slate-900 font-bold rounded-lg text-sm transition-colors">Continue with Google</button>
+        </div>
+        </form>
+
+      <!-- Register Form -->
+      <form id="register-form" onsubmit="handleRegisterSubmit(event)" class="space-y-4 hidden">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Username</label>
+          <input type="text" id="reg-username" required placeholder="android_developer" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3.5 py-2 text-sm text-white focus:border-brand-500 focus:outline-none">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Email Address</label>
+          <input type="email" id="reg-email" required placeholder="you@domain.com" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3.5 py-2 text-sm text-white focus:border-brand-500 focus:outline-none">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Password</label>
+          <input type="password" id="reg-password" minlength="8" required placeholder="At least 8 characters" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3.5 py-2 text-sm text-white focus:border-brand-500 focus:outline-none">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Confirm Password</label>
+          <input type="password" id="reg-confirm" minlength="6" required placeholder="Confirm password" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3.5 py-2 text-sm text-white focus:border-brand-500 focus:outline-none">
+        </div>
+        <button type="submit" class="w-full py-2.5 bg-brand-500 hover:bg-brand-600 text-slate-950 font-bold rounded-lg text-sm transition-colors shadow-lg shadow-brand-500/20">
+          Create Free Account
+        </button>
+        <div id="google-register-box" class="hidden space-y-2">
+          <div class="text-center text-[11px] text-slate-500">ya</div>
+          <button type="button" onclick="googleLogin()" class="w-full py-2.5 bg-white hover:bg-slate-200 text-slate-900 font-bold rounded-lg text-sm transition-colors">Sign up with Google</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification System -->
+  <input type="file" id="apk-upload-input" accept=".apk,application/vnd.android.package-archive,application/octet-stream" class="hidden">
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none"></div>
+
+  <!-- Footer -->
+  <footer class="mt-auto bg-slate-950 border-t border-slate-800 text-slate-400 py-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8 text-sm">
+      <div class="space-y-3">
+        <div class="flex items-center gap-2">
+          <div class="w-7 h-7 rounded-lg bg-brand-500 flex items-center justify-center text-slate-950 font-bold">T</div>
+          <span id="footer-site-name" class="font-extrabold text-white text-base">Toxic Dev</span>
+        </div>
+        <p class="text-xs text-slate-400" id="footer-tagline">Discover, inspect and safely download high performance Android applications, utilities, and developer tools.</p>
+        <p class="text-xs text-slate-500">© 2026 Toxic Dev App Store. All APKs verified for security.</p>
+      </div>
+      <div>
+        <h4 class="text-white font-semibold mb-3 text-xs uppercase tracking-wider">Quick Navigation</h4>
+        <ul class="space-y-2 text-xs">
+          <li><a href="#home" onclick="navigateTo('home')" class="hover:text-brand-400">Featured Android Apps</a></li>
+          <li><a href="#apps" onclick="navigateTo('apps')" class="hover:text-brand-400">All Catalog Applications</a></li>
+          <li><a href="#categories" onclick="navigateTo('categories')" class="hover:text-brand-400">App Categories</a></li>
+          <li><a href="#account" onclick="navigateTo('account')" class="hover:text-brand-400">User Dashboard</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="text-white font-semibold mb-3 text-xs uppercase tracking-wider">Developer & Security</h4>
+        <ul class="space-y-2 text-xs">
+          <li><a href="#seo-tool" onclick="navigateTo('seo-tool')" class="hover:text-brand-400">SEO & Sitemap Schema</a></li>
+          <li><span class="text-slate-500 cursor-default">Protected Storage: Isolated APK Delivery</span></li>
+          <li><span class="text-slate-500 cursor-default">Password Hashing: Argon2id/Bcrypt</span></li>
+          <li><span class="text-slate-500 cursor-default">RBAC Roles: User / Admin / Super Admin</span></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="text-white font-semibold mb-3 text-xs uppercase tracking-wider">Community & Social</h4>
+        <div class="flex gap-3 mb-3" id="footer-socials">
+          <a id="link-telegram" href="https://t.me" target="_blank" class="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center hover:text-brand-400 hover:border-brand-500 transition"><i data-lucide="send" class="w-4 h-4"></i></a>
+          <a id="link-facebook" href="https://facebook.com" target="_blank" class="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center hover:text-brand-400 hover:border-brand-500 transition"><i data-lucide="facebook" class="w-4 h-4"></i></a>
+          <a id="link-github" href="https://github.com" target="_blank" class="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center hover:text-brand-400 hover:border-brand-500 transition"><i data-lucide="github" class="w-4 h-4"></i></a>
+        </div>
+        <p class="text-[11px] text-slate-500">Contact admin: <a id="link-email" href="mailto:admin@toxicdev.io" class="text-brand-400 hover:underline">admin@toxicdev.io</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    /* ==========================================================================
+       TOXIC DEV - IN-MEMORY DATABASE & STATE MANAGEMENT ENGINE
+       ========================================================================== */
+
+    // Initial Database Seeds
+    const DEFAULT_SITE_SETTINGS = {
+      siteName: "Toxic Dev",
+      tagline: "Discover. Download. Explore.",
+      shortDescription: "Explore powerful Android applications, tools, and graphics utilities safely.",
+      primaryColor: "#10b981",
+      requireLoginForDownload: true,
+      contactEmail: "support@toxicdev.io",
+      telegramUrl: "https://t.me/toxicdev_official",
+      facebookUrl: "https://facebook.com/toxicdev",
+      announcement: "Welcome to Toxic Dev!",
+      announcementActive: true
+    };
+
+    const INITIAL_CATEGORIES = [
+      { id: "cat-graphics", name: "Graphics & Design", slug: "graphics-design", icon: "palette", description: "Graphic creation, photo editing, and font design tools." },
+      { id: "cat-video", name: "Video & Multimedia", slug: "video-multimedia", icon: "video", description: "Mobile video editors, screen recorders, and media converters." },
+      { id: "cat-tools", name: "System Utilities", slug: "system-utilities", icon: "wrench", description: "Terminal emulators, APK extractors, and root utilities." },
+      { id: "cat-productivity", name: "Productivity", slug: "productivity", icon: "briefcase", description: "File managers, office tools, and document organizers." },
+      { id: "cat-security", name: "Security & VPN", slug: "security-vpn", icon: "shield-check", description: "Privacy tools, firewall managers, and security scanners." }
+    ];
+
+    const INITIAL_USERS = [];
+
+    const INITIAL_APPS = [];
+
+
+    /* ==========================================================================
+       SUPABASE CLOUD BACKEND  (khali chhodo = purana localStorage demo mode)
+       ========================================================================== */
+    const SUPABASE_URL = "https://xoxynltjloyojdyoycas.supabase.co";       // e.g. https://abcdxyz.supabase.co
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhveHlubHRqbG95b2pkeW95Y2FzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEyMjMwNjcsImV4cCI6MjEwNjc5OTA2N30.zHEVgr5GSwdP4LyxAKjCPQJ68YwXgOTq5LXyonla7jI";  // anon / publishable key (service_role KABHI nahi)
+    const CLOUD = !!(SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase);
+    const GOOGLE_LOGIN = true;
+    const LOGO_URL = "data:image/jpeg;base64,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KbR5lEQNo8yp2jzKhEE7R5lNo8z6VCIJ2jzKbR5n0qEQTtHmU2jzPpUIgnaPM+lNo8yoRBO07mfSm27mfSoRBO0eZ9KbR5n0qEQTtHmfSm27mfSoRBO07mfSm0eZ9KhEE7buZ9KbbvjH0qEQTtu+MfSm27mfSoRBO274x9KbbvjH0qEQTtu+MfSuXB3LhxxXMdAW6WZXJauQkaauV4//AFkz7FHWf0cAsAOrl8NXK/zyZ9jjrP8AN70eRSrmsJREWVEREEHgVr76ynw1M0fO5T2KAtgg8CtffWU+Gpml53KexQFUWwIiKKIiICIiAiIgIiICIiAiIgIiICIiAiIgK+XU6eFzH/Vud+0gqxpXy6nTwuY/6tzv2kFBnDREQddzF/N/ib5smvsXLV5K2hsxfzf4m+bJr7Fy1eSovQREVQREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQFy/QuIXLjgFulmVyWrk8NXK/wA8mfYphZ/m96PIsAOrl8NbK/zyZ9jjrP8AN70eRSrmsJREWVEREEHgVr76ynw1c0fO5T2KAtgg8CtffWU+Grmj53KexS6ItgRERRERAREQEREBERAREQEREBERAREQEREBXy6nTwuY/wCrc79pBVjSvl1Onhcx/wBW537SCgzhoiIOu5i/m/xN82TX2Llq8lbQ2Yv5v8TfNk19i5avJU6r0ERFUEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBctyXErlgbBbpSVyWrkP92rlf55M+xR1n/b3o8i1/wDVyeGtld55M+xx1sAN70eRSrmQlERZUREQQeBWvvrKfDVzS87lPYoC2CDwK199ZT4auaXncp7FLqotgREUUREQEREBERAREQEREBERAREQEREBERAV8up08LmP+rc79pBVjSvl1Onhcx/1bnftIKDOGiIg67mL+b/E3zZNfYuWryVtDZi/m/xN82TX2Llq8lTqvQREVQREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQFywO4LiVyo3hbpSVyWrk8NbK/zyZ9jjrYAb3o8i1/8AVyeGtld55M+xR1sAN70eRSrmQlERZUREQQeBWvvrKfDVzS87lPYpdbBB4Fa++sp8NXNLzuU9igIkrYEREUREQEREBERAREQEREBERAREQEREBERAV8up08LmP+rc79pBVjSvl1Onhcx/1bnftIKDOGiIg67mL+b/ABN82TX2Llq8lbQ2Yv5v8TfNk19i5avJU6r0ERFUEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBcoCuLXJjoWqUlcpq4/DWyu88mfY462AG96PItf7Vx+Gtld55M+xR1sAt70eRKiEoiLKiIiCDwK199ZT4amaPncp7FLrYIPArX31lPhq5o+dynsUuiStgRERREXcMrsoMZZ04mhUDBWHp7ENUfvMKUh3bDb8aI89yxvW4gIOnquFBiR4rYcNjokRxs1jRck9QWVTR/wBS9D7FLVPN7EzuyEBxoOH3ABv8GJMOG/yMb/KV/eU+izlTkjKshYPwPSaXGaADOugCNNPt0ujPu8+lBgPwFoeZ1ZmQWxsO5a4gnJZ1rTEaUMvCPWHxdkH6F7hh7VGaQVbgNizVNodEBF9ifqrS/wBEMP8A61nVspQYVZXUv5zRmXi4hwhAd8Uzcd39UFft2lrOH5UYP9ZmfcrNIiDC32lrOH5UYP8AWZn3Kdpazh+VGD/WZn3KzSIgwt9pazh+VGD/AFmZ9ynaWs4flRg/1mZ9ys0iIMLfaWs4flRg/wBZmfcp2lrOH5UYP9ZmfcrNIiDC32lrOH5UYP8AWZn3Kdpazh+VGD/WZn3KzSIgwt9pazh+VGD/AFmZ9ynaWs4flRg/1mZ9ys0iIMMw1KObBAvjTBwPLss17lXFaCWrix1osZ3xMaYixHh6qU91JmJDsFMfHMXbiOhkHu4bRbuD08lkPRAREQcViqlRa7hir02C9kONOScaXY6JfZDnsc0E26LlYe+0o5sH/LTBv87Ne5WZg8Cg4IvRhn7Shmx8tMHfzk17lO0oZsfLTBv85Ne5WZlERhm7Shmx8tMHfzk17lO0oZsfLTB385Ne5WZlEGGbtKGbHy0wd/OTXuU7Shmx8tMHfzk17lZmUQYZu0oZsfLTB385Ne5X4zWpWzdgsvCxdg6O74ojzLf64KzPogwaYg1P+ftIhGJJQsOVywv2OTquw8/zrGD+leIY90Js88tYESPXcsq9DlYZ7qZk5f4ZCA5l0EvAHlWx0osEGq7MysaTjvgR4T4MZh2XQ4jS1zTyIO8L8lsv5qaOGWedcm+XxpgqkV1zgbTMaXDJhl+lsZtnt+gqwfP/AFL9LnIExUsocSxKfMgFzaFiB/ZILz8WHMNG03q2w7rKDEwi71m7kfjnInEr6FjnDk7h+fFzD+EMvCjtB76FEF2xG9bSV0VAREQEREBERAREQEREBERAREQBxXJDguNHFckOC1Skrk9XH4a2V3nkz7HHWwE3vR5Fr+6uLw18rvPJn2KOtgJvejyJJCURFlRERBB4Fa++sp8NXNHzuU9igLYIPArX21lPhq5pedynsUuiSthRFk51curabiqFTs0s2KYfwO60ei4bm2EfChxbMTDT/wB30tYe+4ndYEryXQp1ZmKNIhslizGbpnCWX7nCJCcWbM5U2/6lru8Yf9I4b/0QeKzJ5S5L4LyNwpAw7gigSlBpkMDabAbeJGdbv4sQ909x5uJXcoMGHLwmQoTGw4bGhrWMbYNA3AAdAVd0Eooul0Eooul0Eooul0Eooul0Eooul0Eooul0Eooul0Eooul0EoouiCUREEHgUHBDwQcOCCUUIglFCIJRQiCUUIglFF//APWQG6CUREHUszsqMJZyYUmcN4zoMniCjzA3y83DuWO6Hsd3zHDoc0ghYd9NjVe4hyKhz2MMuzNYqwKwuizEo4bc9S2cbvAH7rCHxwLgd8P0lm1VL2NiNLXAOaRYgjig1WeCLKhrHdWzClYFTzVylpYhw2B0zXMMScPcBxfMyzBw5vhjrc3pCxXncgIiICIiAiIgIiICIiAiIgDiuRB3LjhxXIX3LUJK5TVxeGxld55M+xR1sBt70eRa/erh8NjK7zyZ9ijrYEb3o8ikkJREUUREQQeBWvtrKfDVzS87lPYpdbBJ4Fa+2sp8NbNHzuU9igIi2FdgZmFimG1rW4kq7WtAAAn4oAA4Dvl19EV2H8omKvlLWPX433k/KJir5S1j1+N95deRB2H8omKvlLWPX433k/KJir5S1j1+N95deRB2H8omKvlLWPX433k/KJir5S1j1+N95deRB2H8omKvlLWPX433k/KJir5S1j1+N95deRB2H8omKvlLWPX433k/KJir5S1j1+N95deRB2H8omKvlLWPX433k/KJir5S1j1+N95deRB2H8omKvlLWPX433k/KJir5S1j1+N95deRB2H8omKvlLWPX433k/KJir5S1j1+N95deRB2H8omKvlLWPX433k/KJir5S1j1+N95deRB2H8omKvlLWPX433le1qh8W1yt6WEaXq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";
+    const sb = CLOUD ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+    // State Persistence Handler
+    class DB {
+      static get(key, defaultVal) {
+        try {
+          const val = localStorage.getItem('toxicdev_' + key);
+          return val ? JSON.parse(val) : defaultVal;
+        } catch(e) { return defaultVal; }
+      }
+      static set(key, val) {
+        try { localStorage.setItem('toxicdev_' + key, JSON.stringify(val)); } catch(e){}
+      }
+    }
+
+    // Initialize State
+    let state = {
+      settings: DB.get('settings', DEFAULT_SITE_SETTINGS),
+      categories: DB.get('categories', INITIAL_CATEGORIES),
+      users: DB.get('users', INITIAL_USERS),
+      apps: DB.get('apps', INITIAL_APPS),
+      downloads: DB.get('downloads', [
+        { id: "d-1", userId: "u-user1", appId: "app-urdu-designer", versionId: "v2.4.0", timestamp: "2026-03-29 10:14", ip: "182.180.22.1" }
+      ]),
+      favorites: DB.get('favorites', ["app-urdu-designer"]),
+      auditLogs: DB.get('auditLogs', [
+        { id: "log-1", adminId: "u-admin", action: "PUBLISH_APP", target: "Urdu Designer Pro", timestamp: "2026-03-20 14:30" }
+      ]),
+      searchLogs: DB.get('searchLogs', [
+        { query: "urdu designer", count: 142 },
+        { query: "video editor", count: 98 },
+        { query: "termux", count: 75 }
+      ]),
+      currentUser: DB.get('currentUser', null), // null if guest, or user object
+      currentView: 'home', // 'home', 'apps', 'app-detail', 'categories', 'account', 'admin', 'seo-tool'
+      viewParams: {},
+      authIntentRedirect: null
+    };
+
+    if (CLOUD) {
+      state.apps = []; state.categories = []; state.users = []; state.downloads = [];
+      state.favorites = []; state.auditLogs = []; state.currentUser = null;
+    }
+
+    function saveState() {
+      if (CLOUD) return; // cloud mode: data Supabase mein save hota hai
+      DB.set('settings', state.settings);
+      DB.set('categories', state.categories);
+      DB.set('users', state.users);
+      DB.set('apps', state.apps);
+      DB.set('downloads', state.downloads);
+      DB.set('favorites', state.favorites);
+      DB.set('auditLogs', state.auditLogs);
+      DB.set('currentUser', state.currentUser);
+    }
+
+    /* ==========================================================================
+       SIMULATED SECURE API ENDPOINTS (SERVER-SIDE MOCK)
+       ========================================================================== */
+
+    function apiServerCall(endpoint, method = 'GET', payload = {}, headers = {}) {
+      // 1. Authenticate Request
+      const user = state.currentUser;
+
+      // Endpoint Routes
+      if (endpoint.startsWith('/api/apps/') && endpoint.endsWith('/download')) {
+        const appId = endpoint.split('/')[3];
+        
+        // RULE 10: Server-side download security validation
+        if (state.settings.requireLoginForDownload && !user) {
+          return { status: 401, error: "Unauthorized. Login required to download APK files." };
+        }
+
+        if (user && user.status === 'suspended') {
+          return { status: 403, error: "Access Denied. Your account has been suspended." };
+        }
+
+        const app = state.apps.find(a => a.id === appId);
+        if (!app || app.status !== 'published') {
+          return { status: 404, error: "Application not available for download." };
+        }
+
+        const currentVer = app.versions.find(v => v.isCurrent) || app.versions[0];
+        if (!currentVer) {
+          return { status: 404, error: "No active APK version found." };
+        }
+
+        // Generate Secure Short-Lived Single Use Download Token
+        const secureToken = 'apk_token_' + Math.random().toString(36).substring(2) + Date.now();
+        
+        // Record Download Log
+        const downloadRecord = {
+          id: 'dl-' + Date.now(),
+          userId: user ? user.id : 'guest-user',
+          appId: app.id,
+          versionId: currentVer.id,
+          timestamp: new Date().toISOString().replace('T', ' ').substring(0, 16),
+          ip: "103.255.4.12"
+        };
+        state.downloads.unshift(downloadRecord);
+        app.downloadsCount = (app.downloadsCount || 0) + 1;
+        saveState();
+
+        return {
+          status: 200,
+          data: {
+            secureDownloadUrl: `/api/download/file?token=${secureToken}&app=${app.slug}`,
+            appName: app.name,
+            version: currentVer.versionName,
+            fileSize: currentVer.apkSize
+          }
+        };
+      }
+
+      // Admin Protection Check
+      if (endpoint.startsWith('/api/admin/')) {
+        if (!user || (user.role !== 'admin' && user.role !== 'super_admin')) {
+          return { status: 403, error: "Forbidden. Admin authorization required." };
+        }
+      }
+
+      return { status: 400, error: "Invalid API route" };
+    }
+
+
+    /* ==========================================================================
+       CLOUD HELPERS (Supabase)
+       ========================================================================== */
+    const isAdminUser = () => !!state.currentUser && (state.currentUser.role === 'admin' || state.currentUser.role === 'super_admin');
+    const isPremiumUser = () => isAdminUser() || (!!state.currentUser && !!state.currentUser.premiumUntil && new Date(state.currentUser.premiumUntil) > new Date());
+    function showPremiumNotice() {
+      if (confirm('Ye Premium app hai. Premium lene ke liye Telegram par rabta karo. Kholun?')) {
+        const u = state.settings.telegramUrl; if (u) window.open(u, '_blank', 'noopener');
+      }
+    }
+    const nowStamp = () => new Date().toISOString().replace('T', ' ').substring(0, 16);
+
+    async function cloudLoadPublic() {
+      const [s, c, a] = await Promise.all([
+        sb.from('settings').select('data').eq('id', 1).maybeSingle(),
+        sb.from('categories').select('id,data').order('created_at'),
+        sb.from('apps').select('id,data').order('created_at')
+      ]);
+      if (s.data && s.data.data) state.settings = Object.assign({}, DEFAULT_SITE_SETTINGS, s.data.data);
+      state.categories = (c.data || []).map(r => Object.assign({}, r.data, { id: r.id }));
+      state.apps = (a.data || []).map(r => Object.assign({}, r.data, { id: r.id }));
+    }
+
+    async function cloudLoadUser() {
+      const { data: { session } } = await sb.auth.getSession();
+      state.favorites = []; state.users = []; state.downloads = []; state.auditLogs = [];
+      if (!session) { state.currentUser = null; return; }
+      const { data: p } = await sb.from('profiles').select('*').eq('id', session.user.id).maybeSingle();
+      if (!p) { state.currentUser = null; return; }
+      state.currentUser = { id: p.id, username: p.username, email: p.email, role: p.role, status: p.status, premiumUntil: p.premium_until || null, createdAt: (p.created_at || '').substring(0, 10) };
+
+      const [fav, dl] = await Promise.all([
+        sb.from('favorites').select('app_id'),
+        sb.from('downloads').select('*').order('created_at', { ascending: false }).limit(500)
+      ]);
+      state.favorites = (fav.data || []).map(r => r.app_id);
+      state.downloads = (dl.data || []).map(d => ({ id: d.id, userId: d.user_id || 'guest-user', appId: d.app_id, versionId: d.version_id, timestamp: (d.created_at || '').replace('T', ' ').substring(0, 16), ip: '—' }));
+
+      if (isAdminUser()) {
+        const [us, lg] = await Promise.all([
+          sb.from('profiles').select('*').order('created_at'),
+          sb.from('audit_logs').select('*').order('created_at', { ascending: false }).limit(200)
+        ]);
+        state.users = (us.data || []).map(u => ({ id: u.id, username: u.username, email: u.email, role: u.role, status: u.status, premiumUntil: u.premium_until || null, createdAt: (u.created_at || '').substring(0, 10) }));
+        state.auditLogs = (lg.data || []).map(l => ({ id: l.id, adminId: l.admin_id, action: l.action, target: l.target, timestamp: (l.created_at || '').replace('T', ' ').substring(0, 16) }));
+      }
+    }
+
+    async function cloudInit() {
+      try {
+        const demo = document.getElementById('demo-creds'); if (demo) demo.remove();
+        if (GOOGLE_LOGIN) { ['google-login-box','google-register-box'].forEach(id => { const g = document.getElementById(id); if (g) g.classList.remove('hidden'); }); }
+        await cloudLoadPublic();
+        await cloudLoadUser();
+      } catch (err) {
+        console.error(err);
+        showToast('Server se connect nahi ho paya. Internet check karo.', 'error');
+      }
+    }
+
+    function cloudSaveApp(app) {
+      const { id, ...data } = app;
+      return sb.from('apps').upsert({ id, data, status: app.status }).then(r => { if (r.error) showToast('Save failed: ' + r.error.message, 'error'); return r; });
+    }
+
+    function cloudLog(action, target) {
+      if (!state.currentUser) return;
+      state.auditLogs.unshift({ id: 'log-' + Date.now(), adminId: state.currentUser.id, action, target, timestamp: nowStamp() });
+      sb.from('audit_logs').insert({ admin_id: state.currentUser.id, action, target }).then(() => {});
+    }
+
+    async function afterAuthSuccess(message) {
+      await cloudLoadUser();
+      closeAuthModal();
+      updateNavigationHeader();
+      showToast(message, 'success');
+      if (state.authIntentRedirect) {
+        const dest = state.authIntentRedirect;
+        state.authIntentRedirect = null;
+        navigateTo(dest.view, dest.params);
+      } else {
+        renderCurrentView();
+      }
+    }
+
+    async function cloudLoginSubmit(e) {
+      const identifier = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value;
+      let email = identifier;
+      if (!identifier.includes('@')) {
+        const { data } = await sb.rpc('email_for_username', { p_username: identifier });
+        if (!data) { showToast('Invalid email/username or password.', 'error'); return; }
+        email = data;
+      }
+      const { error } = await sb.auth.signInWithPassword({ email, password });
+      if (error) {
+        if (/not confirmed/i.test(error.message)) {
+          showToast('Email abhi confirm nahi hui. Inbox ya spam mein link dekho.', 'error');
+          if (confirm('Confirmation email dobara bhejun?')) {
+            const r = await sb.auth.resend({ type: 'signup', email });
+            showToast(r.error ? r.error.message : 'Email bhej di gayi. Inbox/spam check karo.', r.error ? 'error' : 'success');
+          }
+        } else {
+          showToast('Invalid email/username or password.', 'error');
+        }
+        return;
+      }
+      await cloudLoadUser();
+      if (state.currentUser && state.currentUser.status === 'suspended') {
+        await sb.auth.signOut(); state.currentUser = null;
+        showToast('Account suspended. Contact administrator support.', 'error'); return;
+      }
+      await afterAuthSuccess('Welcome back, ' + (state.currentUser ? state.currentUser.username : '') + '!');
+    }
+
+    async function googleLogin() {
+      const { error } = await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin + window.location.pathname } });
+      if (error) showToast(error.message, 'error');
+    }
+
+    async function cloudRegisterSubmit(e) {
+      const username = document.getElementById('reg-username').value.trim();
+      const email = document.getElementById('reg-email').value.trim();
+      const password = document.getElementById('reg-password').value;
+      const confirmPw = document.getElementById('reg-confirm').value;
+      if (password !== confirmPw) { showToast('Passwords do not match.', 'error'); return; }
+      if (password.length < 8) { showToast('Password kam az kam 8 characters ka rakho.', 'error'); return; }
+      if (!/^[A-Za-z0-9_.-]{3,24}$/.test(username)) { showToast('Username 3-24 characters: sirf letters, numbers, _ . -', 'error'); return; }
+      const { data, error } = await sb.auth.signUp({ email, password, options: { data: { username } } });
+      if (error) { showToast(error.message, 'error'); return; }
+      if (!data.session) { showToast('Email par confirmation link bheja gaya hai. Confirm karke login karo.', 'info'); closeAuthModal(); return; }
+      await afterAuthSuccess('Account created successfully!');
+    }
+
+    async function cloudDownload(appId) {
+      const app = state.apps.find(a => a.id === appId);
+      if (!app) return;
+      if (state.settings.requireLoginForDownload && !state.currentUser) {
+        state.authIntentRedirect = { view: 'app-detail', params: { slug: app.slug } };
+        openAuthModal(true); return;
+      }
+      if (state.currentUser && state.currentUser.status === 'suspended') { showToast('Access Denied. Your account has been suspended.', 'error'); return; }
+      const ver = (app.versions || []).find(v => v.isCurrent) || (app.versions || [])[0];
+      if (!ver) { showToast('No active APK version found.', 'error'); return; }
+      if (app.isPremium) {
+        if (!state.currentUser) { state.authIntentRedirect = { view: 'app-detail', params: { slug: app.slug } }; openAuthModal(true); return; }
+        if (!isPremiumUser()) { showPremiumNotice(); return; }
+        if (!ver.apkPath) { showToast('Is premium app ki APK abhi upload nahi hui.', 'error'); return; }
+      }
+      let url = app.isPremium ? undefined : ver.apkUrl;
+      if (!url && ver.apkPath) {
+        const { data, error } = await sb.storage.from('apks').createSignedUrl(ver.apkPath, 120, { download: true });
+        if (error || !data) { showToast('Download allowed nahi ya file missing hai.', 'error'); return; }
+        url = data.signedUrl;
+      }
+      if (!url) { showToast('Is app ki APK abhi upload nahi hui.', 'error'); return; }
+      await sb.from('downloads').insert({ user_id: state.currentUser ? state.currentUser.id : null, app_id: app.id, version_id: ver.id });
+      sb.rpc('bump_downloads', { p_app_id: app.id }).then(() => {});
+      app.downloadsCount = (app.downloadsCount || 0) + 1;
+      showToast('Starting APK download: ' + app.name + ' v' + ver.versionName, 'success');
+      const a = document.createElement('a');
+      a.href = url; a.rel = 'noopener'; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      renderCurrentView();
+    }
+
+    async function cloudAddApp() {
+      const name = prompt('Enter Application Name:');
+      if (!name) return;
+      const link = prompt('APK direct link paste karo (GitHub Releases waghera). Khali chhodo to baad mein APK button se upload karna:') || '';
+      const today = new Date().toISOString().substring(0, 10);
+      const newApp = {
+        id: 'app-' + Date.now(),
+        name,
+        slug: name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || ('app-' + Date.now()),
+        shortDescription: 'Newly uploaded Android application.',
+        fullDescription: '<p>Full app description goes here.</p>',
+        developerName: 'Toxic Dev Core',
+        packageName: 'com.toxicdev.' + name.toLowerCase().replace(/[^a-z0-9]+/g, ''),
+        categoryId: state.categories[0] ? state.categories[0].id : '',
+        tags: ['tool'],
+        iconUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200',
+        featureGraphic: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800',
+        screenshots: [],
+        status: link ? 'published' : 'draft',
+        isFeatured: false, downloadsCount: 0, rating: 5.0, ratingCount: 1,
+        createdAt: today, updatedAt: today,
+        versions: [{ id: 'v1.0.0', versionName: '1.0.0', versionCode: 1, apkSize: '—', minSdk: 'Android 7.0+', changelog: 'Initial Release', isCurrent: true, createdAt: today, apkUrl: link.trim() || undefined }]
+      };
+      const r = await cloudSaveApp(newApp);
+      if (r.error) return;
+      state.apps.push(newApp);
+      cloudLog('CREATE_APP', name);
+      showToast('Created "' + name + '"' + (link ? '' : ' (draft, APK upload karo phir publish)'), 'success');
+      renderCurrentView();
+    }
+
+    async function togglePremiumApp(appId) {
+      const app = state.apps.find(a => a.id === appId); if (!app) return;
+      const ver = (app.versions || []).find(v => v.isCurrent) || (app.versions || [])[0] || {};
+      if (!app.isPremium && !ver.apkPath) { showToast('Premium ke liye pehle APK file upload karo (link secure nahi hota).', 'error'); return; }
+      app.isPremium = !app.isPremium;
+      await cloudSaveApp(app);
+      cloudLog(app.isPremium ? 'PREMIUM_ON' : 'PREMIUM_OFF', app.name);
+      showToast(app.name + (app.isPremium ? ' ab Premium hai.' : ' ab Free hai.'), 'success');
+      renderCurrentView();
+    }
+
+    async function grantPremium(userId) {
+      const u = state.users.find(x => x.id === userId); if (!u) return;
+      const d = prompt('Kitne din ka Premium dena hai? (0 = premium hata do)', '30');
+      if (d === null) return;
+      const days = parseInt(d, 10);
+      if (isNaN(days) || days < 0 || days > 3650) { showToast('Sahi number likho (0 se 3650).', 'error'); return; }
+      const until = days === 0 ? null : new Date(Date.now() + days * 86400000).toISOString();
+      const { error } = await sb.from('profiles').update({ premium_until: until }).eq('id', userId);
+      if (error) { showToast('Failed: ' + error.message, 'error'); return; }
+      u.premiumUntil = until;
+      cloudLog(days === 0 ? 'PREMIUM_REMOVED' : 'PREMIUM_GRANTED', u.username + (days ? ' (' + days + 'd)' : ''));
+      showToast(days === 0 ? 'Premium hata diya.' : u.username + ' ko ' + days + ' din ka Premium mil gaya.', 'success');
+      renderCurrentView();
+    }
+
+    function uploadApkFor(appId) {
+      const input = document.getElementById('apk-upload-input');
+      input.value = '';
+      input.onchange = async () => {
+        const file = input.files[0];
+        if (!file) return;
+        const app = state.apps.find(a => a.id === appId);
+        if (!app) return;
+        if (file.size > 50 * 1024 * 1024) { showToast('File 50MB se badi hai. GitHub Releases link use karo.', 'error'); return; }
+        const ver = app.versions.find(v => v.isCurrent) || app.versions[0];
+        const path = appId + '/' + ver.id + '-' + Date.now() + '.apk';
+        showToast('Uploading ' + (file.size / 1048576).toFixed(1) + ' MB ...', 'info');
+        const { error } = await sb.storage.from('apks').upload(path, file, { contentType: 'application/vnd.android.package-archive' });
+        if (error) { showToast('Upload failed: ' + error.message, 'error'); return; }
+        ver.apkPath = path; delete ver.apkUrl;
+        ver.apkSize = (file.size / 1048576).toFixed(1) + ' MB';
+        app.updatedAt = new Date().toISOString().substring(0, 10);
+        await cloudSaveApp(app);
+        cloudLog('UPLOAD_APK', app.name);
+        showToast('APK upload ho gayi.', 'success');
+        renderCurrentView();
+      };
+      input.click();
+    }
+
+    /* ==========================================================================
+       UI NOTIFICATIONS & MODAL CONTROLLERS
+       ========================================================================== */
+
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      
+      const bgColors = {
+        success: 'bg-emerald-950 border-brand-500 text-brand-300',
+        error: 'bg-rose-950 border-rose-500 text-rose-300',
+        info: 'bg-slate-900 border-slate-700 text-slate-200'
+      };
+
+      toast.className = `p-3.5 rounded-xl border ${bgColors[type] || bgColors.info} text-xs font-medium shadow-2xl flex items-center justify-between gap-3 transform transition-all duration-300 translate-y-2 opacity-0 pointer-events-auto`;
+      toast.innerHTML = `
+        <div class="flex items-center gap-2">
+          <i data-lucide="${type === 'success' ? 'check-circle' : type === 'error' ? 'alert-triangle' : 'info'}" class="w-4 h-4 flex-shrink-0"></i>
+          <span>${message}</span>
+        </div>
+        <button onclick="this.parentElement.remove()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>
+      `;
+
+      container.appendChild(toast);
+      lucide.createIcons();
+
+      setTimeout(() => {
+        toast.classList.remove('translate-y-2', 'opacity-0');
+      }, 10);
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0');
+        setTimeout(() => toast.remove(), 300);
+      }, 4000);
+    }
+
+    function openAuthModal(notice = false) {
+      document.getElementById('auth-modal').classList.remove('hidden');
+      document.getElementById('auth-redirect-notice').classList.toggle('hidden', !notice);
+      lucide.createIcons();
+    }
+
+    function closeAuthModal() {
+      document.getElementById('auth-modal').classList.add('hidden');
+    }
+
+    function switchAuthTab(tab) {
+      const isLogin = tab === 'login';
+      document.getElementById('login-form').classList.toggle('hidden', !isLogin);
+      document.getElementById('register-form').classList.toggle('hidden', isLogin);
+
+      document.getElementById('tab-login-btn').className = isLogin 
+        ? "flex-1 py-2.5 font-semibold text-sm border-b-2 border-brand-500 text-brand-400"
+        : "flex-1 py-2.5 font-semibold text-sm border-b-2 border-transparent text-slate-400 hover:text-slate-200";
+
+      document.getElementById('tab-register-btn').className = !isLogin 
+        ? "flex-1 py-2.5 font-semibold text-sm border-b-2 border-brand-500 text-brand-400"
+        : "flex-1 py-2.5 font-semibold text-sm border-b-2 border-transparent text-slate-400 hover:text-slate-200";
+    }
+
+    function closeAnnouncement() {
+      document.getElementById('announcement-banner').style.display = 'none';
+    }
+
+    function toggleMobileMenu() {
+      document.getElementById('mobile-menu').classList.toggle('hidden');
+    }
+
+    function toggleMobileSearch() {
+      document.getElementById('mobile-search-bar').classList.toggle('hidden');
+    }
+
+    /* ==========================================================================
+       AUTHENTICATION & USER SESSION HANDLERS
+       ========================================================================== */
+
+    function handleLoginSubmit(e) {
+      e.preventDefault();
+      if (CLOUD) return cloudLoginSubmit(e);
+      const identifier = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value.trim();
+
+      const found = state.users.find(u => (u.email === identifier || u.username === identifier) && u.passwordHash === password);
+
+      if (!found) {
+        showToast("Invalid email/username or password.", "error");
+        return;
+      }
+
+      if (found.status === 'suspended') {
+        showToast("Account suspended. Contact administrator support.", "error");
+        return;
+      }
+
+      state.currentUser = found;
+      saveState();
+      closeAuthModal();
+      updateNavigationHeader();
+      showToast(`Welcome back, ${found.username}!`, "success");
+
+      // Check if redirect intended
+      if (state.authIntentRedirect) {
+        const dest = state.authIntentRedirect;
+        state.authIntentRedirect = null;
+        navigateTo(dest.view, dest.params);
+      } else {
+        renderCurrentView();
+      }
+    }
+
+    function handleRegisterSubmit(e) {
+      e.preventDefault();
+      if (CLOUD) return cloudRegisterSubmit(e);
+      const username = document.getElementById('reg-username').value.trim();
+      const email = document.getElementById('reg-email').value.trim();
+      const password = document.getElementById('reg-password').value.trim();
+      const confirm = document.getElementById('reg-confirm').value.trim();
+
+      if (password !== confirm) {
+        showToast("Passwords do not match.", "error");
+        return;
+      }
+
+      if (state.users.some(u => u.email === email || u.username === username)) {
+        showToast("Email or username already exists.", "error");
+        return;
+      }
+
+      const newUser = {
+        id: 'u-' + Date.now(),
+        username,
+        email,
+        role: 'user',
+        status: 'active',
+        passwordHash: password,
+        createdAt: new Date().toISOString().substring(0, 10)
+      };
+
+      state.users.push(newUser);
+      state.currentUser = newUser;
+      saveState();
+      closeAuthModal();
+      updateNavigationHeader();
+      showToast("Account created successfully!", "success");
+
+      if (state.authIntentRedirect) {
+        const dest = state.authIntentRedirect;
+        state.authIntentRedirect = null;
+        navigateTo(dest.view, dest.params);
+      } else {
+        renderCurrentView();
+      }
+    }
+
+    function handleLogout() {
+      if (CLOUD) { sb.auth.signOut(); state.favorites = []; state.users = []; state.downloads = []; state.auditLogs = []; }
+      state.currentUser = null;
+      saveState();
+      updateNavigationHeader();
+      showToast("Logged out successfully.", "info");
+      navigateTo('home');
+    }
+
+    function showForgotPassword() {
+      showToast("If an account exists with this email, a reset link has been dispatched.", "info");
+    }
+
+    /* ==========================================================================
+       DYNAMIC BRANDING & HEADER RENDERER
+       ========================================================================== */
+
+    function updateNavigationHeader() {
+      if (LOGO_URL) {
+        const li = document.getElementById('nav-logo-inner');
+        if (li && !li.dataset.done) { li.innerHTML = '<img src="' + LOGO_URL + '" alt="logo" class="w-full h-full object-cover" style="transform:scale(1.11)">'; li.dataset.done = '1'; }
+        const al = document.getElementById('auth-logo'); if (al) { al.src = LOGO_URL; al.parentElement.classList.remove('hidden'); }
+        let fav = document.querySelector('link[rel~="icon"]');
+        if (!fav) { fav = document.createElement('link'); fav.rel = 'icon'; document.head.appendChild(fav); }
+        fav.href = LOGO_URL;
+      }
+      // Dynamic Branding Refresh
+      document.getElementById('nav-brand-name').innerText = state.settings.siteName;
+      document.getElementById('nav-brand-tagline').innerText = state.settings.tagline;
+      document.getElementById('footer-site-name').innerText = state.settings.siteName;
+      document.getElementById('footer-tagline').innerText = state.settings.shortDescription;
+
+      // Announcement Refresh
+      const banner = document.getElementById('announcement-banner');
+      if (state.settings.announcementActive && state.settings.announcement) {
+        banner.classList.remove('hidden');
+        document.getElementById('announcement-text').innerText = state.settings.announcement;
+      } else {
+        banner.classList.add('hidden');
+      }
+
+      // Admin Badge Toggle
+      const user = state.currentUser;
+      const isAdmin = user && (user.role === 'admin' || user.role === 'super_admin');
+      document.getElementById('admin-badge-container').classList.toggle('hidden', !isAdmin);
+
+      // User Area
+      const area = document.getElementById('nav-user-area');
+      const mobileArea = document.getElementById('mobile-auth-area');
+
+      if (user) {
+        area.innerHTML = `
+          <button onclick="navigateTo('account')" class="flex items-center gap-2 px-3 py-1.5 bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/60 rounded-full transition">
+            <div class="w-6 h-6 rounded-full bg-brand-500 text-slate-950 font-bold text-xs flex items-center justify-center uppercase">
+              ${user.username.charAt(0)}
+            </div>
+            <span class="hidden sm:inline text-xs font-semibold text-slate-200">${user.username}</span>
+          </button>
+          <button onclick="handleLogout()" class="p-2 text-slate-400 hover:text-rose-400 transition" title="Logout">
+            <i data-lucide="log-out" class="w-4 h-4"></i>
+          </button>
+        `;
+        mobileArea.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-slate-400">Logged in as <strong>${user.username}</strong></span>
+            <button onclick="handleLogout()" class="text-xs text-rose-400 hover:underline">Logout</button>
+          </div>
+        `;
+      } else {
+        area.innerHTML = `
+          <button onclick="openAuthModal(false)" class="hidden sm:block text-xs font-semibold px-3 py-1.5 text-slate-300 hover:text-white transition">Log In</button>
+          <button onclick="openAuthModal(false); switchAuthTab('register');" class="hidden sm:block text-xs font-bold px-3.5 py-1.5 bg-brand-500 hover:bg-brand-600 text-slate-950 rounded-lg transition shadow-md shadow-brand-500/20">Sign Up</button>
+          <button onclick="openAuthModal(false)" class="sm:hidden text-xs font-bold px-3.5 py-1.5 bg-brand-500 text-slate-950 rounded-full">Login</button>
+        `;
+        mobileArea.innerHTML = `
+          <div class="grid grid-cols-2 gap-2">
+            <button onclick="openAuthModal(false); toggleMobileMenu();" class="w-full py-2 bg-slate-800 text-slate-200 rounded-lg text-xs font-medium">Log In</button>
+            <button onclick="openAuthModal(false); switchAuthTab('register'); toggleMobileMenu();" class="w-full py-2 bg-brand-500 text-slate-950 rounded-lg text-xs font-bold">Register</button>
+          </div>
+        `;
+      }
+
+      lucide.createIcons();
+    }
+
+    function handleHeaderSearch(e) {
+      if (e.key === 'Enter') {
+        const query = e.target.value.trim();
+        if (query) {
+          // Log search query analytics
+          const existing = state.searchLogs.find(s => s.query.toLowerCase() === query.toLowerCase());
+          if (existing) existing.count++;
+          else state.searchLogs.push({ query, count: 1 });
+          saveState();
+
+          navigateTo('apps', { search: query });
+        }
+      }
+    }
+
+    /* ==========================================================================
+       VIEW ROUTER
+       ========================================================================== */
+
+    function navigateTo(view, params = {}) {
+      state.currentView = view;
+      state.viewParams = params;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      renderCurrentView();
+    }
+
+    function renderCurrentView() {
+      const router = document.getElementById('app-router');
+      updateNavigationHeader();
+
+      switch (state.currentView) {
+        case 'home':
+          router.innerHTML = renderHomeView();
+          break;
+        case 'apps':
+          router.innerHTML = renderAppsCatalogView();
+          break;
+        case 'app-detail':
+          router.innerHTML = renderAppDetailView();
+          break;
+        case 'categories':
+          router.innerHTML = renderCategoriesView();
+          break;
+        case 'account':
+          router.innerHTML = renderAccountView();
+          break;
+        case 'admin':
+          router.innerHTML = renderAdminDashboardView();
+          break;
+        case 'seo-tool':
+          router.innerHTML = renderSeoToolView();
+          break;
+        default:
+          router.innerHTML = renderHomeView();
+      }
+
+      lucide.createIcons();
+    }
+
+    /* ==========================================================================
+       VIEW 1: PUBLIC HOMEPAGE
+       ========================================================================== */
+
+    function renderHomeView() {
+      const publishedApps = state.apps.filter(a => a.status === 'published');
+      const featured = publishedApps.filter(a => a.isFeatured);
+      const popular = [...publishedApps].sort((a,b) => b.downloadsCount - a.downloadsCount).slice(0, 4);
+      const recentlyUpdated = [...publishedApps].sort((a,b) => new Date(b.updatedAt) - new Date(a.updatedAt)).slice(0, 4);
+
+      return `
+        <!-- Hero Section -->
+        <section class="relative rounded-3xl bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 border border-slate-800/80 p-6 sm:p-10 overflow-hidden shadow-2xl">
+          <div class="absolute -right-20 -top-20 w-80 h-80 bg-brand-500/10 rounded-full blur-3xl pointer-events-none"></div>
+          <div class="absolute right-1/3 -bottom-20 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+          <div class="max-w-2xl space-y-4 relative z-10">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/30 text-brand-400 text-xs font-semibold">
+              <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> 100% Virus-Free & Verified APK Store
+            </div>
+            <h1 class="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
+              Discover Powerful <span class="bg-gradient-to-r from-brand-400 via-cyan-400 to-emerald-300 bg-clip-text text-transparent">Android Apps</span> & Tools
+            </h1>
+            <p class="text-slate-400 text-sm sm:text-base leading-relaxed">
+              Explore useful Android applications, utilities, design mods, and system tools curated by ${state.settings.siteName}. Fast, safe, and direct downloads.
+            </p>
+
+            <!-- Main Hero Search Bar -->
+            <div class="pt-2">
+              <div class="relative flex items-center">
+                <i data-lucide="search" class="w-5 h-5 absolute left-4 text-slate-400"></i>
+                <input type="text" id="hero-search-input" placeholder="Search apps, tools and utilities..." 
+                  class="w-full bg-slate-950/90 border border-slate-700/80 rounded-2xl pl-12 pr-28 py-3.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 shadow-xl"
+                  onkeyup="if(event.key==='Enter') navigateTo('apps', {search: this.value})">
+                <button onclick="navigateTo('apps', {search: document.getElementById('hero-search-input').value})" class="absolute right-2 px-4 py-2 bg-brand-500 hover:bg-brand-600 text-slate-950 font-bold rounded-xl text-xs transition shadow-md">
+                  Search
+                </button>
+              </div>
+            </div>
+
+            <!-- Popular Category Tags -->
+            <div class="flex flex-wrap items-center gap-2 pt-2 text-xs text-slate-400">
+              <span class="font-semibold text-slate-300">Popular:</span>
+              ${state.categories.map(c => `
+                <button onclick="navigateTo('apps', {category: '${c.id}'})" class="px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700/50 transition">
+                  ${c.name}
+                </button>
+              `).join('')}
+            </div>
+          </div>
+        </section>
+
+        <!-- Featured Apps Slider / Grid -->
+        ${featured.length > 0 ? `
+          <section class="space-y-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <i data-lucide="sparkles" class="w-5 h-5 text-amber-400"></i>
+                <h2 class="text-xl font-bold text-white tracking-tight">Featured Applications</h2>
+              </div>
+              <button onclick="navigateTo('apps')" class="text-xs font-semibold text-brand-400 hover:underline flex items-center gap-1">View All <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              ${featured.map(app => renderFeaturedCard(app)).join('')}
+            </div>
+          </section>
+        ` : ''}
+
+        <!-- Popular Apps Section -->
+        <section class="space-y-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <i data-lucide="trending-up" class="w-5 h-5 text-brand-400"></i>
+              <h2 class="text-xl font-bold text-white tracking-tight">Most Downloaded</h2>
+            </div>
+            <button onclick="navigateTo('apps')" class="text-xs font-semibold text-brand-400 hover:underline flex items-center gap-1">Explore Catalog <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></button>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            ${popular.map(app => renderAppCard(app)).join('')}
+          </div>
+        </section>
+
+        <!-- Categories Overview Section -->
+        <section class="space-y-4 pt-4">
+          <h2 class="text-xl font-bold text-white tracking-tight flex items-center gap-2">
+            <i data-lucide="layers" class="w-5 h-5 text-cyan-400"></i> Browse Categories
+          </h2>
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+            ${state.categories.map(c => `
+              <div onclick="navigateTo('apps', {category: '${c.id}'})" class="glass-card p-4 rounded-2xl hover:border-brand-500/50 cursor-pointer transition group">
+                <div class="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700/80 flex items-center justify-center text-brand-400 group-hover:bg-brand-500 group-hover:text-slate-950 transition mb-3">
+                  <i data-lucide="${c.icon || 'folder'}" class="w-5 h-5"></i>
+                </div>
+                <h3 class="font-bold text-sm text-slate-200 group-hover:text-brand-400 transition">${c.name}</h3>
+                <p class="text-[11px] text-slate-400 mt-0.5 line-clamp-1">${c.description}</p>
+              </div>
+            `).join('')}
+          </div>
+        </section>
+
+        <!-- Recently Updated Section -->
+        <section class="space-y-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <i data-lucide="clock" class="w-5 h-5 text-cyan-400"></i>
+              <h2 class="text-xl font-bold text-white tracking-tight">Recently Updated</h2>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            ${recentlyUpdated.map(app => renderAppCard(app)).join('')}
+          </div>
+        </section>
+      `;
+    }
+
+    function renderAppCard(app) {
+      const category = state.categories.find(c => c.id === app.categoryId);
+      const currentVer = app.versions.find(v => v.isCurrent) || app.versions[0] || {};
+
+      return `
+        <div onclick="navigateTo('app-detail', {slug: '${app.slug}'})" class="glass-card p-4 rounded-2xl border border-slate-800 hover:border-slate-700 hover:bg-slate-800/40 cursor-pointer transition group flex flex-col justify-between">
+          <div class="space-y-3">
+            <div class="flex items-start gap-3">
+              <img src="${app.iconUrl}" alt="${app.name}" class="w-14 h-14 rounded-2xl object-cover border border-slate-700/60 shadow-md group-hover:scale-105 transition-transform" onerror="this.src='https://placehold.co/100/10b981/ffffff?text=APK'">
+              <div class="flex-1 min-w-0">
+                <h3 class="font-bold text-sm text-white group-hover:text-brand-400 transition truncate">${app.name}</h3>
+                <p class="text-xs text-slate-400 truncate">${app.developerName}</p>
+                <div class="flex items-center gap-2 mt-1">
+                  <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700/50">${category ? category.name : 'Utility'}</span>
+                  <span class="text-[10px] font-mono text-brand-400">v${currentVer.versionName || '1.0'}</span>
+                </div>
+              </div>
+            </div>
+            <p class="text-xs text-slate-400 line-clamp-2 leading-relaxed">${app.shortDescription}</p>
+          </div>
+
+          <div class="pt-3 mt-3 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
+            <span class="flex items-center gap-1 text-amber-400 font-semibold"><i data-lucide="star" class="w-3 h-3 fill-amber-400"></i> ${app.rating || 5.0}</span>
+            <span class="flex items-center gap-1"><i data-lucide="download" class="w-3 h-3 text-slate-500"></i> ${app.downloadsCount || 0}</span>
+            <span class="font-mono text-slate-400">${currentVer.apkSize || '20MB'}</span>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderFeaturedCard(app) {
+      const currentVer = app.versions.find(v => v.isCurrent) || app.versions[0] || {};
+      return `
+        <div onclick="navigateTo('app-detail', {slug: '${app.slug}'})" class="relative rounded-2xl overflow-hidden border border-slate-800 hover:border-brand-500/50 cursor-pointer transition group shadow-xl">
+          <img src="${app.featureGraphic}" alt="${app.name}" class="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800'">
+          <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/70 to-transparent p-4 flex flex-col justify-end">
+            <div class="flex items-center gap-3">
+              <img src="${app.iconUrl}" class="w-12 h-12 rounded-xl object-cover border border-white/20 shadow">
+              <div>
+                <h3 class="font-extrabold text-base text-white group-hover:text-brand-400 transition">${app.name}</h3>
+                <p class="text-xs text-slate-300 line-clamp-1">${app.shortDescription}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    /* ==========================================================================
+       VIEW 2: APPS CATALOG & SMART SEARCH
+       ========================================================================== */
+
+    function renderAppsCatalogView() {
+      const params = state.viewParams || {};
+      let searchQuery = (params.search || '').toLowerCase();
+      let selectedCat = params.category || 'all';
+
+      let filtered = state.apps.filter(a => a.status === 'published');
+
+      if (selectedCat !== 'all') {
+        filtered = filtered.filter(a => a.categoryId === selectedCat);
+      }
+
+      if (searchQuery) {
+        filtered = filtered.filter(a => 
+          a.name.toLowerCase().includes(searchQuery) ||
+          a.shortDescription.toLowerCase().includes(searchQuery) ||
+          a.developerName.toLowerCase().includes(searchQuery) ||
+          a.tags.some(t => t.toLowerCase().includes(searchQuery))
+        );
+      }
+
+      return `
+        <div class="space-y-6">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+            <div>
+              <h1 class="text-2xl font-black text-white">Application Store Catalog</h1>
+              <p class="text-xs text-slate-400">Search and filter verified Android applications.</p>
+            </div>
+
+            <!-- Filter Controls -->
+            <div class="flex flex-wrap items-center gap-3">
+              <div class="relative">
+                <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                <input type="text" value="${params.search || ''}" placeholder="Filter apps..." 
+                  class="bg-slate-900 border border-slate-700 rounded-lg pl-9 pr-3 py-1.5 text-xs text-white focus:outline-none focus:border-brand-500"
+                  onkeyup="if(event.key==='Enter') navigateTo('apps', {search: this.value, category: '${selectedCat}'})">
+              </div>
+
+              <select onchange="navigateTo('apps', {search: '${params.search||''}', category: this.value})" class="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:outline-none">
+                <option value="all" ${selectedCat==='all'?'selected':''}>All Categories</option>
+                ${state.categories.map(c => `<option value="${c.id}" ${selectedCat===c.id?'selected':''}>${c.name}</option>`).join('')}
+              </select>
+            </div>
+          </div>
+
+          <!-- App Grid -->
+          ${filtered.length > 0 ? `
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              ${filtered.map(app => renderAppCard(app)).join('')}
+            </div>
+          ` : `
+            <div class="text-center py-16 bg-slate-900/50 rounded-2xl border border-slate-800 space-y-3">
+              <i data-lucide="package-search" class="w-12 h-12 text-slate-600 mx-auto"></i>
+              <h3 class="font-bold text-slate-300">No Applications Found</h3>
+              <p class="text-xs text-slate-500">No published applications matched your filter query "${searchQuery}".</p>
+              <button onclick="navigateTo('apps')" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 rounded-lg transition">Clear Filters</button>
+            </div>
+          `}
+        </div>
+      `;
+    }
+
+    /* ==========================================================================
+       VIEW 3: APP DETAIL PAGE & AUTH PROTECTED DOWNLOAD ROUTE
+       ========================================================================== */
+
+    function renderAppDetailView() {
+      const slug = state.viewParams.slug;
+      const app = state.apps.find(a => a.slug === slug);
+
+      if (!app) {
+        return `
+          <div class="text-center py-16 space-y-4">
+            <h2 class="text-xl font-bold text-slate-300">Application Not Found</h2>
+            <button onclick="navigateTo('home')" class="px-4 py-2 bg-brand-500 text-slate-950 text-xs font-bold rounded-lg">Return Home</button>
+          </div>
+        `;
+      }
+
+      const category = state.categories.find(c => c.id === app.categoryId);
+      const currentVer = app.versions.find(v => v.isCurrent) || app.versions[0] || {};
+      const user = state.currentUser;
+      const isFav = state.favorites.includes(app.id);
+
+      // Update Browser SEO Title dynamically (RULE 7)
+      document.title = `${app.name} APK Download (v${currentVer.versionName}) — ${state.settings.siteName}`;
+
+      return `
+        <!-- Breadcrumb Navigation -->
+        <nav class="flex items-center gap-2 text-xs text-slate-400 mb-2">
+          <a href="#home" onclick="navigateTo('home')" class="hover:text-brand-400">Home</a>
+          <i data-lucide="chevron-right" class="w-3 h-3"></i>
+          <a href="#apps" onclick="navigateTo('apps', {category: '${app.categoryId}'})" class="hover:text-brand-400">${category ? category.name : 'Apps'}</a>
+          <i data-lucide="chevron-right" class="w-3 h-3"></i>
+          <span class="text-slate-200 font-semibold truncate">${app.name}</span>
+        </nav>
+
+        <!-- Main App Header Card -->
+        <div class="glass-card rounded-3xl p-6 border border-slate-800 space-y-6">
+          <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div class="flex items-start gap-4">
+              <img src="${app.iconUrl}" alt="${app.name}" class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover border border-slate-700 shadow-xl">
+              <div class="space-y-1">
+                <h1 class="text-2xl sm:text-3xl font-black text-white">${app.name}</h1>
+                <p class="text-xs text-brand-400 font-medium">Developed by ${app.developerName}</p>
+                <div class="flex flex-wrap items-center gap-2 pt-1 text-xs text-slate-400">
+                  <span class="px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300">${category ? category.name : 'Tool'}</span>${app.isPremium ? '<span class="px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 text-amber-400 font-bold">👑 Premium</span>' : ''}
+                  <span>•</span>
+                  <span class="font-mono text-slate-300">Package: ${app.packageName}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Buttons Area -->
+            <div class="w-full md:w-auto flex flex-col sm:flex-row items-center gap-3">
+              <button onclick="toggleFavorite('${app.id}')" class="w-full sm:w-auto p-3 rounded-xl border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center gap-2 text-xs font-semibold">
+                <i data-lucide="heart" class="w-4 h-4 ${isFav ? 'fill-rose-500 text-rose-500' : ''}"></i> ${isFav ? 'Favorited' : 'Favorite'}
+              </button>
+
+              <button onclick="triggerProtectedDownload('${app.id}')" class="w-full sm:w-auto px-6 py-3 bg-brand-500 hover:bg-brand-600 text-slate-950 font-black rounded-xl text-sm transition shadow-lg shadow-brand-500/25 flex items-center justify-center gap-2">
+                <i data-lucide="${app.isPremium && !isPremiumUser() ? 'crown' : 'download'}" class="w-5 h-5"></i> ${app.isPremium && !isPremiumUser() ? 'Premium Unlock' : 'Download APK (' + (currentVer.apkSize || '30MB') + ')'}
+              </button>
+            </div>
+          </div>
+
+          <!-- Metadata Pill Stats -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-slate-800/80 text-center">
+            <div class="p-3 bg-slate-900/60 rounded-xl border border-slate-800/80">
+              <p class="text-[10px] uppercase tracking-wider text-slate-500">Version</p>
+              <p class="text-sm font-bold text-white font-mono">v${currentVer.versionName || '1.0'}</p>
+            </div>
+            <div class="p-3 bg-slate-900/60 rounded-xl border border-slate-800/80">
+              <p class="text-[10px] uppercase tracking-wider text-slate-500">Android Version</p>
+              <p class="text-sm font-bold text-white">${currentVer.minSdk || 'Android 7.0+'}</p>
+            </div>
+            <div class="p-3 bg-slate-900/60 rounded-xl border border-slate-800/80">
+              <p class="text-[10px] uppercase tracking-wider text-slate-500">Total Downloads</p>
+              <p class="text-sm font-bold text-brand-400">${app.downloadsCount || 0}</p>
+            </div>
+            <div class="p-3 bg-slate-900/60 rounded-xl border border-slate-800/80">
+              <p class="text-[10px] uppercase tracking-wider text-slate-500">Rating</p>
+              <p class="text-sm font-bold text-amber-400 flex items-center justify-center gap-1"><i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400"></i> ${app.rating || 5.0}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Screenshots Gallery -->
+        ${app.screenshots && app.screenshots.length > 0 ? `
+          <div class="space-y-3">
+            <h3 class="text-lg font-bold text-white flex items-center gap-2"><i data-lucide="image" class="w-4 h-4 text-brand-400"></i> Application Screenshots</h3>
+            <div class="flex items-center gap-4 overflow-x-auto pb-2 no-scrollbar">
+              ${app.screenshots.map(s => `
+                <img src="${s}" alt="Screenshot" class="h-60 rounded-xl object-cover border border-slate-800 shadow-md hover:scale-105 transition-transform cursor-pointer">
+              `).join('')}
+            </div>
+          </div>
+        ` : ''}
+
+        <!-- Description & Features -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="lg:col-span-2 space-y-6">
+            <div class="glass-card p-6 rounded-2xl border border-slate-800 space-y-4">
+              <h3 class="text-lg font-bold text-white">Description</h3>
+              <div class="text-slate-300 text-sm leading-relaxed space-y-2">
+                ${app.fullDescription}
+              </div>
+            </div>
+
+            <div class="glass-card p-6 rounded-2xl border border-slate-800 space-y-3">
+              <h3 class="text-lg font-bold text-white flex items-center gap-2"><i data-lucide="list-checks" class="w-4 h-4 text-brand-400"></i> What's New in v${currentVer.versionName}</h3>
+              <p class="text-xs text-slate-300 bg-slate-900 p-3.5 rounded-xl border border-slate-800 font-mono">${currentVer.changelog || 'General performance updates and bug fixes.'}</p>
+            </div>
+          </div>
+
+          <!-- Sidebar Info -->
+          <div class="space-y-4">
+            <div class="glass-card p-5 rounded-2xl border border-slate-800 space-y-3 text-xs">
+              <h4 class="font-bold text-white uppercase text-[11px] tracking-wider text-slate-400">App Specifications</h4>
+              <div class="space-y-2 text-slate-300">
+                <div class="flex justify-between py-1 border-b border-slate-800"><span>Updated:</span> <span class="font-medium text-white">${app.updatedAt}</span></div>
+                <div class="flex justify-between py-1 border-b border-slate-800"><span>License:</span> <span class="font-medium text-brand-400">Free / Verified</span></div>
+                <div class="flex justify-between py-1 border-b border-slate-800"><span>Developer:</span> <span class="font-medium text-white">${app.developerName}</span></div>
+                <div class="flex justify-between py-1 border-b border-slate-800"><span>Architecture:</span> <span class="font-mono text-white">arm64-v8a / universal</span></div>
+              </div>
+
+              <!-- SEO Metadata Inspector Link -->
+              <button onclick="navigateTo('seo-tool', {appSlug: '${app.slug}'})" class="w-full mt-2 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-semibold transition flex items-center justify-center gap-1.5">
+                <i data-lucide="file-code" class="w-3.5 h-3.5 text-brand-400"></i> Inspect SEO & Schema
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    /* ==========================================================================
+       DOWNLOAD EXECUTION & AUTHORIZATION HANDLER
+       ========================================================================== */
+
+    function triggerProtectedDownload(appId) {
+      if (CLOUD) return cloudDownload(appId);
+      // Execute Simulated API Server Download Call
+      const res = apiServerCall(`/api/apps/${appId}/download`);
+
+      if (res.status === 401) {
+        // Auth mandatory rule triggered
+        state.authIntentRedirect = { view: 'app-detail', params: { slug: state.apps.find(a=>a.id===appId).slug } };
+        openAuthModal(true);
+        return;
+      }
+
+      if (res.status === 403) {
+        showToast(res.error, "error");
+        return;
+      }
+
+      if (res.status === 200) {
+        showToast(`Starting secure APK download: ${res.data.appName} v${res.data.version}`, "success");
+
+        // Trigger fake browser file download stream
+        const blob = new Blob([`Dummy APK Binary Content for ${res.data.appName}\nSigned & Verified by Toxic Dev`], { type: 'application/vnd.android.package-archive' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${res.data.appName.toLowerCase().replace(/\s+/g, '_')}_v${res.data.version}.apk`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        renderCurrentView(); // Refresh download counts
+      }
+    }
+
+    function toggleFavorite(appId) {
+      if (!state.currentUser) {
+        showToast("Please log in to add apps to favorites.", "info");
+        openAuthModal(false);
+        return;
+      }
+
+      const idx = state.favorites.indexOf(appId);
+      if (CLOUD) {
+        if (idx > -1) sb.from('favorites').delete().match({ user_id: state.currentUser.id, app_id: appId }).then(() => {});
+        else sb.from('favorites').insert({ user_id: state.currentUser.id, app_id: appId }).then(() => {});
+      }
+      if (idx > -1) {
+        state.favorites.splice(idx, 1);
+        showToast("Removed from favorites.", "info");
+      } else {
+        state.favorites.push(appId);
+        showToast("Added to favorites!", "success");
+      }
+      saveState();
+      renderCurrentView();
+    }
+
+    /* ==========================================================================
+       VIEW 4: CATEGORIES PAGE
+       ========================================================================== */
+
+    function renderCategoriesView() {
+      return `
+        <div class="space-y-6">
+          <div class="border-b border-slate-800 pb-4">
+            <h1 class="text-2xl font-black text-white">Application Categories</h1>
+            <p class="text-xs text-slate-400">Explore Android software by specialized domain.</p>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            ${state.categories.map(c => {
+              const count = state.apps.filter(a => a.categoryId === c.id && a.status === 'published').length;
+              return `
+                <div onclick="navigateTo('apps', {category: '${c.id}'})" class="glass-card p-5 rounded-2xl border border-slate-800 hover:border-brand-500/50 cursor-pointer transition group flex items-start gap-4">
+                  <div class="w-12 h-12 rounded-2xl bg-brand-500/10 border border-brand-500/30 flex items-center justify-center text-brand-400 group-hover:bg-brand-500 group-hover:text-slate-950 transition">
+                    <i data-lucide="${c.icon || 'folder'}" class="w-6 h-6"></i>
+                  </div>
+                  <div class="space-y-1 flex-1">
+                    <div class="flex items-center justify-between">
+                      <h3 class="font-bold text-base text-white group-hover:text-brand-400 transition">${c.name}</h3>
+                      <span class="text-xs font-mono text-slate-400 bg-slate-900 px-2 py-0.5 rounded-full">${count} Apps</span>
+                    </div>
+                    <p class="text-xs text-slate-400 leading-relaxed">${c.description}</p>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    /* ==========================================================================
+       VIEW 5: USER ACCOUNT & DOWNLOAD HISTORY
+       ========================================================================== */
+
+    function renderAccountView() {
+      const user = state.currentUser;
+      if (!user) {
+        return `
+          <div class="text-center py-16 space-y-4">
+            <h2 class="text-xl font-bold text-slate-300">Login Required</h2>
+            <p class="text-xs text-slate-400">Please sign in to view your user profile and download history.</p>
+            <button onclick="openAuthModal(false)" class="px-5 py-2.5 bg-brand-500 text-slate-950 font-bold text-xs rounded-xl">Sign In</button>
+          </div>
+        `;
+      }
+
+      const userDownloads = state.downloads.filter(d => d.userId === user.id);
+      const favApps = state.apps.filter(a => state.favorites.includes(a.id));
+
+      return `
+        <div class="space-y-6">
+          <!-- Profile Banner -->
+          <div class="glass-card p-6 rounded-3xl border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+              <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-400 to-brand-600 text-slate-950 font-black text-2xl flex items-center justify-center uppercase shadow-lg">
+                ${user.username.charAt(0)}
+              </div>
+              <div>
+                <h1 class="text-xl font-black text-white">${user.username}</h1>
+                <p class="text-xs text-slate-400">${user.email}</p>
+                <span class="inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded bg-brand-500/10 text-brand-400 border border-brand-500/30 uppercase tracking-wider">${user.role}</span>${user.premiumUntil && new Date(user.premiumUntil) > new Date() ? ` <span class="inline-block mt-1 ml-1 text-[10px] font-bold px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/30">👑 Premium till ${user.premiumUntil.substring(0,10)}</span>` : ''}
+              </div>
+            </div>
+
+            <button onclick="handleLogout()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl transition">
+              Sign Out
+            </button>
+          </div>
+
+          <!-- Favorites Section -->
+          <div class="space-y-3">
+            <h3 class="text-lg font-bold text-white flex items-center gap-2"><i data-lucide="heart" class="w-5 h-5 text-rose-500"></i> Saved Favorites</h3>
+            ${favApps.length > 0 ? `
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                ${favApps.map(a => renderAppCard(a)).join('')}
+              </div>
+            ` : `
+              <p class="text-xs text-slate-500 italic p-4 bg-slate-900/40 rounded-xl border border-slate-800">You haven't added any favorite apps yet.</p>
+            `}
+          </div>
+
+          <!-- Download History Section -->
+          <div class="space-y-3">
+            <h3 class="text-lg font-bold text-white flex items-center gap-2"><i data-lucide="history" class="w-5 h-5 text-brand-400"></i> Your Download History</h3>
+            ${userDownloads.length > 0 ? `
+              <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
+                <table class="w-full text-left text-xs text-slate-300">
+                  <thead class="bg-slate-950 text-slate-400 border-b border-slate-800 font-mono">
+                    <tr>
+                      <th class="p-3">App</th>
+                      <th class="p-3">Version</th>
+                      <th class="p-3">Date</th>
+                      <th class="p-3 text-right">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-800">
+                    ${userDownloads.map(d => {
+                      const app = state.apps.find(a => a.id === d.appId);
+                      return `
+                        <tr>
+                          <td class="p-3 font-semibold text-white">${app ? app.name : 'Unknown App'}</td>
+                          <td class="p-3 font-mono text-brand-400">${d.versionId}</td>
+                          <td class="p-3 text-slate-400">${d.timestamp}</td>
+                          <td class="p-3 text-right">
+                            ${app ? `<button onclick="triggerProtectedDownload('${app.id}')" class="px-2.5 py-1 bg-brand-500/10 hover:bg-brand-500/20 text-brand-400 font-semibold rounded transition">Re-download</button>` : ''}
+                          </td>
+                        </tr>
+                      `;
+                    }).join('')}
+                  </tbody>
+                </table>
+              </div>
+            ` : `
+              <p class="text-xs text-slate-500 italic p-4 bg-slate-900/40 rounded-xl border border-slate-800">No downloads recorded for this account yet.</p>
+            `}
+          </div>
+        </div>
+      `;
+    }
+
+    /* ==========================================================================
+       VIEW 6: ADMIN CONTROL DASHBOARD (MANAGEMENT SUITE)
+       ========================================================================== */
+
+    function renderAdminDashboardView() {
+      const user = state.currentUser;
+      if (!user || (user.role !== 'admin' && user.role !== 'super_admin')) {
+        return `
+          <div class="text-center py-16 space-y-4">
+            <i data-lucide="shield-off" class="w-12 h-12 text-rose-500 mx-auto"></i>
+            <h2 class="text-xl font-bold text-slate-200">Access Denied (403)</h2>
+            <p class="text-xs text-slate-400">You must be logged in as an Administrator to view this panel.</p>
+            <button onclick="navigateTo('home')" class="px-4 py-2 bg-slate-800 text-slate-200 text-xs font-bold rounded-lg">Return Home</button>
+          </div>
+        `;
+      }
+
+      const totalApps = state.apps.length;
+      const publishedApps = state.apps.filter(a => a.status === 'published').length;
+      const totalUsers = state.users.length;
+      const totalDownloads = state.downloads.length;
+
+      return `
+        <div class="space-y-6">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+            <div>
+              <h1 class="text-2xl font-black text-white flex items-center gap-2"><i data-lucide="shield" class="w-6 h-6 text-amber-400"></i> Toxic Dev Admin Panel</h1>
+              <p class="text-xs text-slate-400">Server & App store administration suite.</p>
+            </div>
+            <span class="px-3 py-1 bg-amber-500/10 text-amber-400 border border-amber-500/30 text-xs font-bold rounded-full uppercase">Super Admin Active</span>
+          </div>
+
+          <!-- Admin Metric Stats -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div class="glass-card p-4 rounded-2xl border border-slate-800 space-y-1">
+              <p class="text-[10px] font-bold uppercase text-slate-500">Total Catalog Apps</p>
+              <p class="text-2xl font-black text-white">${totalApps}</p>
+              <p class="text-[10px] text-brand-400">${publishedApps} Published</p>
+            </div>
+            <div class="glass-card p-4 rounded-2xl border border-slate-800 space-y-1">
+              <p class="text-[10px] font-bold uppercase text-slate-500">Registered Users</p>
+              <p class="text-2xl font-black text-white">${totalUsers}</p>
+              <p class="text-[10px] text-cyan-400">Active Accounts</p>
+            </div>
+            <div class="glass-card p-4 rounded-2xl border border-slate-800 space-y-1">
+              <p class="text-[10px] font-bold uppercase text-slate-500">Total Downloads</p>
+              <p class="text-2xl font-black text-brand-400">${totalDownloads}</p>
+              <p class="text-[10px] text-slate-400">Verified Sessions</p>
+            </div>
+            <div class="glass-card p-4 rounded-2xl border border-slate-800 space-y-1">
+              <p class="text-[10px] font-bold uppercase text-slate-500">Categories</p>
+              <p class="text-2xl font-black text-white">${state.categories.length}</p>
+              <p class="text-[10px] text-slate-400">Active Taxonomy</p>
+            </div>
+          </div>
+
+          <!-- Admin Management Tabs -->
+          <div class="space-y-4">
+            <div class="flex flex-wrap border-b border-slate-800 gap-2">
+              <button onclick="switchAdminTab('apps-tab')" id="tab-btn-apps-tab" class="py-2 px-4 font-bold text-xs border-b-2 border-brand-500 text-brand-400">App Management</button>
+              <button onclick="switchAdminTab('users-tab')" id="tab-btn-users-tab" class="py-2 px-4 font-bold text-xs border-b-2 border-transparent text-slate-400 hover:text-slate-200">Users (${totalUsers})</button>
+              <button onclick="switchAdminTab('settings-tab')" id="tab-btn-settings-tab" class="py-2 px-4 font-bold text-xs border-b-2 border-transparent text-slate-400 hover:text-slate-200">Site Settings & Branding</button>
+              <button onclick="switchAdminTab('logs-tab')" id="tab-btn-logs-tab" class="py-2 px-4 font-bold text-xs border-b-2 border-transparent text-slate-400 hover:text-slate-200">Audit Logs</button>
+            </div>
+
+            <!-- Tab 1: App Management -->
+            <div id="admin-tab-apps-tab" class="space-y-4">
+              <div class="flex justify-between items-center">
+                <h3 class="text-sm font-bold text-white">Application Manager</h3>
+                <button onclick="openAddAppModal()" class="px-3.5 py-1.5 bg-brand-500 hover:bg-brand-600 text-slate-950 font-bold text-xs rounded-lg flex items-center gap-1.5">
+                  <i data-lucide="plus" class="w-4 h-4"></i> Add Application
+                </button>
+              </div>
+
+              <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-x-auto">
+                <table class="w-full text-left text-xs text-slate-300">
+                  <thead class="bg-slate-950 text-slate-400 border-b border-slate-800 font-mono">
+                    <tr>
+                      <th class="p-3">App Name</th>
+                      <th class="p-3">Category</th>
+                      <th class="p-3">Version</th>
+                      <th class="p-3">Status</th>
+                      <th class="p-3">Downloads</th>
+                      <th class="p-3 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-800">
+                    ${state.apps.map(a => {
+                      const cat = state.categories.find(c => c.id === a.categoryId);
+                      const ver = a.versions.find(v => v.isCurrent) || a.versions[0] || {};
+                      return `
+                        <tr>
+                          <td class="p-3 flex items-center gap-2">
+                            <img src="${a.iconUrl}" class="w-8 h-8 rounded-lg object-cover">
+                            <span class="font-bold text-white">${a.name}</span>
+                          </td>
+                          <td class="p-3">${cat ? cat.name : 'Unassigned'}</td>
+                          <td class="p-3 font-mono text-brand-400">v${ver.versionName || '1.0'}</td>
+                          <td class="p-3">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase ${a.status==='published'?'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30':'bg-amber-500/10 text-amber-400 border border-amber-500/30'}">
+                              ${a.status}
+                            </span>
+                          </td>
+                          <td class="p-3">${a.downloadsCount || 0}</td>
+                          <td class="p-3 text-right space-x-2">
+                            ${CLOUD ? `<button onclick="uploadApkFor('${a.id}')" class="text-xs text-cyan-400 hover:underline">${(ver.apkPath || ver.apkUrl) ? 'APK ✓' : 'Upload APK'}</button>` : ''}
+                            ${CLOUD ? `<button onclick="togglePremiumApp('${a.id}')" class="text-xs text-amber-400 hover:underline">${a.isPremium ? 'Make Free' : 'Make Premium'}</button>` : ''}
+                            <button onclick="togglePublishApp('${a.id}')" class="text-xs text-brand-400 hover:underline">${a.status==='published'?'Unpublish':'Publish'}</button>
+                            <button onclick="deleteApp('${a.id}')" class="text-xs text-rose-400 hover:underline">Delete</button>
+                          </td>
+                        </tr>
+                      `;
+                    }).join('')}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Tab 2: User Management -->
+            <div id="admin-tab-users-tab" class="space-y-4 hidden">
+              <h3 class="text-sm font-bold text-white">Registered User Accounts</h3>
+              <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-x-auto">
+                <table class="w-full text-left text-xs text-slate-300">
+                  <thead class="bg-slate-950 text-slate-400 border-b border-slate-800 font-mono">
+                    <tr>
+                      <th class="p-3">Username</th>
+                      <th class="p-3">Email</th>
+                      <th class="p-3">Role</th>
+                      <th class="p-3">Status</th>
+                      <th class="p-3 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-800">
+                    ${state.users.map(u => `
+                      <tr>
+                        <td class="p-3 font-bold text-white">${u.username}</td>
+                        <td class="p-3 text-slate-400">${u.email}</td>
+                        <td class="p-3 font-mono uppercase text-brand-400">${u.role}</td>
+                        <td class="p-3">
+                          <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase ${u.status==='active'?'bg-emerald-500/10 text-emerald-400':'bg-rose-500/10 text-rose-400'}">${u.status}</span>${u.premiumUntil && new Date(u.premiumUntil) > new Date() ? ` <span class="text-[10px] text-amber-400">👑 ${u.premiumUntil.substring(0,10)}</span>` : ''}
+                        </td>
+                        <td class="p-3 text-right space-x-2">
+                          ${u.role !== 'admin' ? `
+                            ${CLOUD ? `<button onclick="grantPremium('${u.id}')" class="text-xs text-amber-400 hover:underline">Premium</button>` : ''}
+                            <button onclick="toggleUserSuspend('${u.id}')" class="text-xs ${u.status==='active'?'text-rose-400':'text-emerald-400'} hover:underline">
+                              ${u.status==='active'?'Suspend':'Unsuspend'}
+                            </button>
+                          ` : ''}
+                        </td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Tab 3: Site Settings & Dynamic Branding -->
+            <div id="admin-tab-settings-tab" class="space-y-4 hidden">
+              <div class="glass-card p-6 rounded-2xl border border-slate-800 max-w-xl space-y-4">
+                <h3 class="text-sm font-bold text-white">Store Configurations</h3>
+                
+                <div>
+                  <label class="block text-xs font-semibold text-slate-300 mb-1">Site Name (Brand)</label>
+                  <input type="text" id="setting-sitename" value="${state.settings.siteName}" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white">
+                  <p class="text-[10px] text-slate-500 mt-1">Change to "Evil Tech" to test alternative brand requirement.</p>
+                </div>
+
+                <div>
+                  <label class="block text-xs font-semibold text-slate-300 mb-1">Tagline</label>
+                  <input type="text" id="setting-tagline" value="${state.settings.tagline}" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white">
+                </div>
+
+                <div>
+                  <label class="block text-xs font-semibold text-slate-300 mb-1">Site Announcement Banner</label>
+                  <input type="text" id="setting-announcement" value="${state.settings.announcement}" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white">
+                </div>
+
+                <div class="flex items-center justify-between pt-2">
+                  <span class="text-xs text-slate-300 font-semibold">Require Login Before Download</span>
+                  <input type="checkbox" id="setting-require-login" ${state.settings.requireLoginForDownload ? 'checked' : ''} class="w-4 h-4 rounded bg-slate-950 border-slate-700 text-brand-500">
+                </div>
+
+                <button onclick="saveSiteSettings()" class="w-full py-2 bg-brand-500 text-slate-950 font-bold text-xs rounded-lg">Save Configurations</button>
+              </div>
+            </div>
+
+            <!-- Tab 4: Audit Logs -->
+            <div id="admin-tab-logs-tab" class="space-y-4 hidden">
+              <h3 class="text-sm font-bold text-white">Security Audit Log</h3>
+              <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 font-mono text-xs space-y-2">
+                ${state.auditLogs.map(l => `
+                  <div class="p-2 border-b border-slate-800/60 flex justify-between">
+                    <span class="text-brand-400">[${l.timestamp}]</span>
+                    <span class="text-white font-semibold">${l.action}</span>
+                    <span class="text-slate-400">${l.target}</span>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    /* ==========================================================================
+       ADMIN CONTROLLER FUNCTIONS
+       ========================================================================== */
+
+    function switchAdminTab(tabId) {
+      ['apps-tab', 'users-tab', 'settings-tab', 'logs-tab'].forEach(t => {
+        document.getElementById(`admin-tab-${t}`).classList.add('hidden');
+        document.getElementById(`tab-btn-${t}`).className = "py-2 px-4 font-bold text-xs border-b-2 border-transparent text-slate-400 hover:text-slate-200";
+      });
+
+      document.getElementById(`admin-tab-${tabId}`).classList.remove('hidden');
+      document.getElementById(`tab-btn-${tabId}`).className = "py-2 px-4 font-bold text-xs border-b-2 border-brand-500 text-brand-400";
+    }
+
+    function togglePublishApp(appId) {
+      const app = state.apps.find(a => a.id === appId);
+      if (app) {
+        app.status = app.status === 'published' ? 'draft' : 'published';
+        state.auditLogs.unshift({
+          id: 'log-' + Date.now(),
+          adminId: state.currentUser.id,
+          action: app.status === 'published' ? 'PUBLISH_APP' : 'UNPUBLISH_APP',
+          target: app.name,
+          timestamp: new Date().toISOString().replace('T', ' ').substring(0, 16)
+        });
+        saveState();
+        if (CLOUD) { cloudSaveApp(app); }
+        showToast(`App status updated to ${app.status}`, "success");
+        renderCurrentView();
+      }
+    }
+
+    function deleteApp(appId) {
+      if (confirm("Are you sure you want to delete this application?")) {
+        const gone = state.apps.find(a => a.id === appId);
+        state.apps = state.apps.filter(a => a.id !== appId);
+        if (CLOUD) { sb.from('apps').delete().eq('id', appId).then(() => {}); cloudLog('DELETE_APP', gone ? gone.name : appId); }
+        saveState();
+        showToast("Application deleted.", "info");
+        renderCurrentView();
+      }
+    }
+
+    function toggleUserSuspend(userId) {
+      const u = state.users.find(user => user.id === userId);
+      if (u) {
+        u.status = u.status === 'active' ? 'suspended' : 'active';
+        if (CLOUD) { sb.from('profiles').update({ status: u.status }).eq('id', userId).then(() => {}); cloudLog(u.status === 'suspended' ? 'SUSPEND_USER' : 'UNSUSPEND_USER', u.username); }
+        saveState();
+        showToast(`User status set to ${u.status}`, "info");
+        renderCurrentView();
+      }
+    }
+
+    function saveSiteSettings() {
+      state.settings.siteName = document.getElementById('setting-sitename').value.trim();
+      state.settings.tagline = document.getElementById('setting-tagline').value.trim();
+      state.settings.announcement = document.getElementById('setting-announcement').value.trim();
+      state.settings.requireLoginForDownload = document.getElementById('setting-require-login').checked;
+      if (CLOUD) { sb.from('settings').upsert({ id: 1, data: state.settings }).then(r => { if (r.error) showToast('Save failed: ' + r.error.message, 'error'); }); cloudLog('UPDATE_SETTINGS', 'Site settings'); }
+
+      saveState();
+      updateNavigationHeader();
+      showToast("Store settings saved successfully!", "success");
+    }
+
+    function openAddAppModal() {
+      if (CLOUD) return cloudAddApp();
+      const name = prompt("Enter Application Name:");
+      if (!name) return;
+
+      const newApp = {
+        id: 'app-' + Date.now(),
+        name,
+        slug: name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+        shortDescription: "Newly uploaded Android application.",
+        fullDescription: "<p>Full app description goes here.</p>",
+        developerName: "Toxic Dev Core",
+        packageName: "com.toxicdev." + name.toLowerCase().replace(/[^a-z0-9]+/g, ''),
+        categoryId: state.categories[0].id,
+        tags: ["tool"],
+        iconUrl: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200",
+        featureGraphic: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800",
+        screenshots: [],
+        status: "published",
+        isFeatured: false,
+        downloadsCount: 0,
+        rating: 5.0,
+        ratingCount: 1,
+        createdAt: new Date().toISOString().substring(0,10),
+        updatedAt: new Date().toISOString().substring(0,10),
+        versions: [
+          { id: 'v1.0.0', versionName: '1.0.0', versionCode: 1, apkSize: '25.0 MB', minSdk: 'Android 7.0+', changelog: 'Initial Release', isCurrent: true, createdAt: new Date().toISOString().substring(0,10) }
+        ]
+      };
+
+      state.apps.push(newApp);
+      saveState();
+      showToast(`Created new application "${name}"`, "success");
+      renderCurrentView();
+    }
+
+    /* ==========================================================================
+       VIEW 7: SEO & STRUCTURED DATA INSPECTOR TOOL
+       ========================================================================== */
+
+    function renderSeoToolView() {
+      const slug = state.viewParams.appSlug || (state.apps[0] ? state.apps[0].slug : '');
+      const app = state.apps.find(a => a.slug === slug) || state.apps[0];
+
+      if (!app) return `<p class="p-4 text-slate-400">No apps available for SEO inspection.</p>`;
+
+      const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": app.name,
+        "operatingSystem": "ANDROID",
+        "applicationCategory": "UtilitiesApplication",
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": app.rating || "5.0",
+          "ratingCount": app.ratingCount || "10"
+        },
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        }
+      };
+
+      const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://toxicdev.io/</loc></url>
+  ${state.apps.filter(a=>a.status==='published').map(a => `<url><loc>https://toxicdev.io/app/${a.slug}</loc></url>`).join('\n  ')}
+</urlset>`;
+
+      const robotsTxt = `User-agent: *
+Allow: /
+Allow: /app/
+Allow: /category/
+Disallow: /admin/
+Disallow: /account/
+Disallow: /api/download/`;
+
+      return `
+        <div class="space-y-6">
+          <div class="border-b border-slate-800 pb-4">
+            <h1 class="text-2xl font-black text-white flex items-center gap-2"><i data-lucide="globe" class="w-6 h-6 text-brand-400"></i> SEO & Schema Discovery Inspector</h1>
+            <p class="text-xs text-slate-400">Verify search engine indexing structure, OpenGraph tags, and SoftwareApplication schemas.</p>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- App Json-LD Schema -->
+            <div class="glass-card p-5 rounded-2xl border border-slate-800 space-y-3">
+              <h3 class="text-sm font-bold text-white flex items-center justify-between">
+                <span>JSON-LD Structured Schema</span>
+                <span class="text-xs text-brand-400 font-mono">${app.name}</span>
+              </h3>
+              <pre class="bg-slate-950 p-4 rounded-xl text-[11px] font-mono text-emerald-400 overflow-x-auto border border-slate-800">${JSON.stringify(jsonLd, null, 2)}</pre>
+            </div>
+
+            <!-- Dynamic Sitemap Preview -->
+            <div class="glass-card p-5 rounded-2xl border border-slate-800 space-y-3">
+              <h3 class="text-sm font-bold text-white">XML Sitemap Output (/sitemap.xml)</h3>
+              <pre class="bg-slate-950 p-4 rounded-xl text-[11px] font-mono text-cyan-400 overflow-x-auto border border-slate-800">${sitemapXml}</pre>
+            </div>
+          </div>
+
+          <!-- Robots.txt Preview -->
+          <div class="glass-card p-5 rounded-2xl border border-slate-800 space-y-3 max-w-lg">
+            <h3 class="text-sm font-bold text-white">Crawl Rules (/robots.txt)</h3>
+            <pre class="bg-slate-950 p-4 rounded-xl text-[11px] font-mono text-slate-300 border border-slate-800">${robotsTxt}</pre>
+          </div>
+        </div>
+      `;
+    }
+
+    /* ==========================================================================
+       INITIALIZATION BOOTSTRAP
+       ========================================================================== */
+
+    window.onload = async function() {
+      if (CLOUD) await cloudInit();
+      updateNavigationHeader();
+      renderCurrentView();
+    };
+  </script>
+</body>
+</html>
